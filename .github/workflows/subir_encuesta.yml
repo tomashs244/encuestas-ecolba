@@ -1,0 +1,36 @@
+name: Subir encuestas acumuladas
+
+on:
+  schedule:
+    - cron: "0 23 * * *"  # ⏰ Ejecuta cada día a las 23:00 UTC (18:00 Colombia)
+  workflow_dispatch:       # Permite ejecutarlo manualmente desde GitHub
+
+jobs:
+  subir:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Configurar Git
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+
+      - name: 🔄 Combinar resultados nuevos
+        run: |
+          # Carpeta temporal donde tu página podría guardar respuestas nuevas
+          if [ -f data/respuestas_temp.csv ]; then
+            echo "Agregando respuestas nuevas..."
+            cat data/respuestas_temp.csv >> ResultadosEncuesta.csv
+            rm data/respuestas_temp.csv
+          else
+            echo "No se encontró 'data/respuestas_temp.csv'. Nada que combinar."
+          fi
+
+      - name: 🚀 Subir cambios al repositorio
+        run: |
+          git add .
+          git commit -m "📈 Actualización diaria de resultados $(date '+%Y-%m-%d')" || echo "Sin cambios que subir"
+          git push
