@@ -5,6 +5,10 @@ on:
     - cron: "0 23 * * *"  # ⏰ Ejecuta cada día a las 23:00 UTC (18:00 Colombia)
   workflow_dispatch:       # Permite ejecutarlo manualmente desde GitHub
 
+# ✅ Da permiso al bot de GitHub Actions para hacer commits y push
+permissions:
+  contents: write
+
 jobs:
   subir:
     runs-on: ubuntu-latest
@@ -20,7 +24,7 @@ jobs:
 
       - name: 🔄 Combinar resultados nuevos
         run: |
-          # Carpeta temporal donde tu página podría guardar respuestas nuevas
+          # Carpeta temporal donde tu página guarda respuestas nuevas
           if [ -f data/respuestas_temp.csv ]; then
             echo "Agregando respuestas nuevas..."
             cat data/respuestas_temp.csv >> ResultadosEncuesta.csv
